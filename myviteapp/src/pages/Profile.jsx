@@ -4,7 +4,10 @@ import "./dashboard.css";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("cmms_user"));
+
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("cmms_user"))
+  );
 
   if (!user) {
     return <h2>Please login first</h2>;
@@ -15,19 +18,17 @@ export default function Profile() {
   const [dept, setDept] = useState("");
   const [photo, setPhoto] = useState("");
 
-  // ✅ FETCH PROFILE
+  // ✅ FETCH PROFILE (FIXED dependency)
   useEffect(() => {
     fetch(`http://localhost:5000/api/auth/profile/${user._id}`)
       .then(res => res.json())
       .then(data => {
-        console.log("PHOTO FROM DB:", data.photo); // debug
-
         setName(data.username || "");
         setEmail(data.email || "");
         setDept(data.department || "");
         setPhoto(data.photo || "");
       });
-  }, []);
+  }, [user._id]); // ✅ IMPORTANT
 
   // ✅ PHOTO UPLOAD
   const onPhotoChange = (e) => {
@@ -36,7 +37,7 @@ export default function Profile() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      setPhoto(reader.result); // base64 image
+      setPhoto(reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -50,7 +51,7 @@ export default function Profile() {
         username: name,
         email,
         department: dept,
-        photo
+        photo,
       }),
     });
 
@@ -60,7 +61,8 @@ export default function Profile() {
       // ✅ update localStorage
       localStorage.setItem("cmms_user", JSON.stringify(updatedUser));
 
-      // ✅ FORCE UI UPDATE (THIS FIXES YOUR ISSUE)
+      // ✅ update state (VERY IMPORTANT)
+      setUser(updatedUser);
       setPhoto(updatedUser.photo);
 
       alert("✅ Profile saved successfully");
@@ -97,7 +99,7 @@ export default function Profile() {
     }
   };
 
-  // ✅ DEACTIVATE (TECHNICIAN)
+  // ✅ DEACTIVATE
   const deactivate = async () => {
     const password = prompt("Enter password to deactivate:");
 
@@ -118,8 +120,6 @@ export default function Profile() {
 
     if (deactRes.ok) {
       alert("Account deactivated");
-
-      // ✅ logout immediately
       localStorage.clear();
       navigate("/login");
     } else {
@@ -170,12 +170,10 @@ export default function Profile() {
               Save Profile
             </button>
 
-            {/* DELETE FOR ALL */}
             <button className="dash-action-btn red" onClick={deleteAccount}>
               Delete Account
             </button>
 
-            {/* TECHNICIAN ONLY */}
             {user.role === "technician" && (
               <button className="dash-action-btn orange" onClick={deactivate}>
                 Deactivate Account

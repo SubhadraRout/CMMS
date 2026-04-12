@@ -48,135 +48,142 @@ export default function ReportIssue() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // 🔥 FIXED SUBMIT FUNCTION
   const submit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const errs = {};
-  if (!computerId.trim()) errs.computerId = "Computer ID is required";
-  if (!department.trim()) errs.department = "Department is required";
-  if (!comment.trim()) errs.comment = "Description is required";
+    const errs = {};
+    if (!computerId.trim()) errs.computerId = "Computer ID is required";
+    if (!department.trim()) errs.department = "Department is required";
+    if (!comment.trim()) errs.comment = "Description is required";
 
-  setErrors(errs);
-  if (Object.keys(errs).length > 0) return;
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
 
-  try {
-    const userId = localStorage.getItem("userId"); // ✅ added
+    try {
+      // ✅ FIX: get full user from localStorage
+      const user = JSON.parse(localStorage.getItem("cmms_user"));
 
-    const res = await fetch("http://localhost:5000/api/issues", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        computerId,
-        department,
-        issueType,
-        description: comment,
-        priority: "Medium",
-        assignedTo: "tech",
-        reportedBy: userId, // ✅ added
-      }),
-    });
+      if (!user?._id) {
+        alert("Login required ❌");
+        return;
+      }
 
-    if (!res.ok) {
-      throw new Error("Server error");
+      const res = await fetch("http://localhost:5000/api/issues", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          computerId,
+          department,
+          issueType,
+          description: comment,
+          priority: "Medium",
+          assignedTo: "Unassigned", // ✅ FIXED
+          reportedBy: user._id,     // ✅ FIXED
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Server error");
+      }
+
+      const data = await res.json();
+
+      alert("✅ Issue reported successfully!");
+
+      addNotification({
+        message: `Issue reported for ${computerId} (${issueType})`,
+        time: new Date().toLocaleString(),
+      });
+
+      setComputerId("");
+      setDepartment("");
+      setComment("");
+      setIssueType("keyboard");
+
+    } catch (err) {
+      console.error("ERROR:", err);
+      alert("❌ Failed to submit issue");
     }
-
-    const data = await res.json();
-
-    alert("✅ Issue reported successfully!");
-
-    addNotification({
-      message: `Issue reported for ${computerId} (${issueType})`,
-      time: new Date().toLocaleString(),
-    });
-
-    setComputerId("");
-    setDepartment("");
-    setComment("");
-    setIssueType("keyboard");
-
-  } catch (err) {
-    console.error("ERROR:", err);
-    alert("❌ Failed to submit issue");
-  }
-};
+  };
 
   return (
-  <div className="report-page">
-    <h2 className="report-title">Report Maintenance Issue</h2>
+    <div className="report-page">
+      <h2 className="report-title">Report Maintenance Issue</h2>
 
-    <div className="report-container">
+      <div className="report-container">
 
-      {/* LEFT FORM */}
-      <form onSubmit={submit} className="report-form">
+        {/* LEFT FORM */}
+        <form onSubmit={submit} className="report-form">
 
-        <div className="form-group">
-          <label>Computer ID</label>
-          <input
-            value={computerId}
-            onChange={(e) => setComputerId(e.target.value.toUpperCase())}
-            placeholder="LAB-PC-12"
-            className={errors.computerId ? "input error" : "input"}
-          />
-          {errors.computerId && <ErrorText>{errors.computerId}</ErrorText>}
+          <div className="form-group">
+            <label>Computer ID</label>
+            <input
+              value={computerId}
+              onChange={(e) => setComputerId(e.target.value.toUpperCase())}
+              placeholder="LAB-PC-12"
+              className={errors.computerId ? "input error" : "input"}
+            />
+            {errors.computerId && <ErrorText>{errors.computerId}</ErrorText>}
+          </div>
+
+          <div className="form-group">
+            <label>Department</label>
+            <input
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              placeholder="CSE Lab"
+              className={errors.department ? "input error" : "input"}
+            />
+            {errors.department && <ErrorText>{errors.department}</ErrorText>}
+          </div>
+
+          <div className="form-group">
+            <label>Issue Type</label>
+            <select
+              value={issueType}
+              onChange={(e) => setIssueType(e.target.value)}
+              className="input"
+            >
+              <option value="keyboard">Keyboard Not Working</option>
+              <option value="mouse">Mouse Not Working</option>
+              <option value="monitor">Monitor Issue</option>
+              <option value="pc">System / PC Issue</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Problem Details</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Describe the issue..."
+              rows={5}
+              className={errors.comment ? "input error" : "input"}
+            />
+            {errors.comment && <ErrorText>{errors.comment}</ErrorText>}
+          </div>
+
+          <button type="submit" className="submit-btn">
+            Submit Issue 🚀
+          </button>
+
+        </form>
+
+        {/* RIGHT PREVIEW */}
+        <div className="preview-card">
+          <h3>Component Preview</h3>
+
+          <img src={preview.img} alt={preview.label} />
+
+          <p className="preview-label">{preview.label}</p>
         </div>
 
-        <div className="form-group">
-          <label>Department</label>
-          <input
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            placeholder="CSE Lab"
-            className={errors.department ? "input error" : "input"}
-          />
-          {errors.department && <ErrorText>{errors.department}</ErrorText>}
-        </div>
-
-        <div className="form-group">
-          <label>Issue Type</label>
-          <select
-            value={issueType}
-            onChange={(e) => setIssueType(e.target.value)}
-            className="input"
-          >
-            <option value="keyboard">Keyboard Not Working</option>
-            <option value="mouse">Mouse Not Working</option>
-            <option value="monitor">Monitor Issue</option>
-            <option value="pc">System / PC Issue</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Problem Details</label>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Describe the issue..."
-            rows={5}
-            className={errors.comment ? "input error" : "input"}
-          />
-          {errors.comment && <ErrorText>{errors.comment}</ErrorText>}
-        </div>
-
-        <button type="submit" className="submit-btn">
-          Submit Issue 🚀
-        </button>
-
-      </form>
-
-      {/* RIGHT PREVIEW */}
-      <div className="preview-card">
-        <h3>Component Preview</h3>
-
-        <img src={preview.img} alt={preview.label} />
-
-        <p className="preview-label">{preview.label}</p>
       </div>
-
     </div>
-  </div>
-);
+  );
 }
 
 // Styles

@@ -1,5 +1,8 @@
+console.log("✅ AUTH ROUTES LOADED");
+console.log("✅ AUTH ROUTES LOADED");
 import express from "express";
-import User from "../models/User.js";
+import User from "../models/user.js";
+import Issue from "../models/Issue.js"; // ✅ ADDED
 
 const router = express.Router();
 
@@ -8,12 +11,25 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
+    // ✅ EMAIL VALIDATION ADDED
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = new User({ username, email, password, role });
+    const newUser = new User({
+      username,
+      email,
+      password,
+      role,
+      isDeleted: false,
+    });
+
     await newUser.save();
 
     res.json({ message: "Signup successful", user: newUser });
@@ -34,7 +50,6 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // 🔥 Reactivate if deactivated
     if (user.isDeleted) {
       user.isDeleted = false;
       await user.save();
@@ -70,18 +85,23 @@ router.post("/forgot-password", async (req, res) => {
 
 // ✅ GET PROFILE
 router.get("/profile/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.json(user);
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching profile" });
+  }
 });
 
-// ✅ GET USERS (WITH ROLE FILTER) 🔥 IMPORTANT
+// ✅ GET USERS
 router.get("/users", async (req, res) => {
   try {
     const role = req.query.role;
 
-    const users = await User.find(
-      role ? { role } : {}
-    ).select("-password"); // 👈 ONLY CHANGE
+    const users = await User.find({
+      ...(role ? { role } : {}),
+      isDeleted: false,
+    }).select("-password");
 
     res.json(users);
   } catch (err) {
@@ -91,28 +111,60 @@ router.get("/users", async (req, res) => {
 
 // ✅ UPDATE PROFILE
 router.put("/profile/:id", async (req, res) => {
-  const updated = await User.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(updated);
+  try {
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).select("-password");
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Error updating profile" });
+  }
 });
 
-// ✅ DELETE
+// ✅ DELETE ACCOUNT
 router.delete("/profile/:id", async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting account" });
+  }
 });
 
 // ✅ DEACTIVATE
 router.put("/profile/:id/deactivate", async (req, res) => {
-  const updated = await User.findByIdAndUpdate(
-    req.params.id,
-    { isDeleted: true },
-    { new: true }
-  );
-  res.json(updated);
+  try {
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: true },
+      { new: true }
+    );
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Error deactivating account" });
+  }
+});
+
+// ✅ NOTIFICATIONS (ADDED)
+router.get("/notifications/:userId", async (req, res) => {
+  try {
+    const notifications = await Issue.find({
+      $or: [
+        { reportedBy: req.params.userId },
+        { assignedTo: req.params.userId }
+      ]
+    })
+    .populate("reportedBy", "username")
+    .sort({ createdAt: -1 });
+
+    res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching notifications" });
+  }
 });
 
 export default router;

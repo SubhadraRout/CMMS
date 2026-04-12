@@ -1,9 +1,23 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String,
+  username: {
+    type: String,
+    required: true,        // ✅ FIX: required
+    trim: true,
+  },
+
+  email: {
+    type: String,
+    required: true,        // ✅ FIX
+    unique: true,
+    trim: true,
+  },
+
+  password: {
+    type: String,
+    required: true,        // ✅ FIX
+  },
 
   role: {
     type: String,
@@ -11,16 +25,24 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
 
-  // ✅ extra fields for profile
-  department: String,
-  photo: String,
+  // ✅ FIX: remove duplicate + clean structure
+  department: {
+    type: String,
+    default: "",
+  },
 
-  // ✅ for temporary deactivate
+  photo: {
+    type: String,
+    default: "",
+  },
+
+  // ✅ important for soft delete
   isDeleted: {
     type: Boolean,
-    default: false
-  }
-});
+    default: false,
+  },
+
+}, { timestamps: true }); // ✅ ADD THIS (important for consistency)
 
 const User = mongoose.model("User", userSchema);
 

@@ -23,6 +23,13 @@ export default function Signup() {
       return;
     }
 
+    // ✅ EMAIL VALIDATION ADDED
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      alert("Enter valid email ❌");
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -67,7 +74,9 @@ export default function Signup() {
             onChange={handleChange}
           />
 
+          {/* ✅ FIXED TYPE */}
           <input
+            type="email"
             name="email"
             placeholder="Email"
             value={form.email}

@@ -15,7 +15,6 @@ function StatCard({ title, value, sub }) {
 export default function AdminDashboard() {
   const navigate = useNavigate();
 
-  // ✅ ALL HOOKS MUST BE INSIDE COMPONENT
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
@@ -35,10 +34,6 @@ export default function AdminDashboard() {
   const stats = useMemo(() => {
     const total = orders.length;
 
-    const byStatus = (s) =>
-      orders.filter((o) => (o.status || "").toLowerCase() === s).length;
-
-    const open = byStatus("open");
     const pending = orders.filter(o => o.status === "Pending").length;
     const inProgress = orders.filter(o => o.status === "In Progress").length;
     const completed = orders.filter(o => o.status === "Completed").length;
@@ -47,15 +42,37 @@ export default function AdminDashboard() {
       (o) => (o.priority || "").toLowerCase() === "high"
     ).length;
 
-    const recent = [...orders].slice(0, 6);
-    const healthScore = total === 0 ? 100 : Math.max(30, 100 - (open + pending) * 6);
+    // ✅ NEW: quotation stats
+    const quotationsPending = orders.filter(
+      (o) => o.quotationSent && !o.approved
+    ).length;
 
-    return { total, open, inProgress, completed, pending, priorityHigh, recent, healthScore };
+    const quotationsApproved = orders.filter(
+      (o) => o.approved === true
+    ).length;
+
+    const recent = [...orders].slice(-6).reverse();
+
+    const healthScore =
+      total === 0 ? 100 : Math.max(30, 100 - (pending + quotationsPending) * 5);
+
+    return {
+      total,
+      inProgress,
+      completed,
+      pending,
+      priorityHigh,
+      quotationsPending,
+      quotationsApproved,
+      recent,
+      healthScore,
+    };
   }, [orders]);
 
   return (
     <div className="dash-wrap">
 
+      {/* HEADER */}
       <div style={{
         background: "#ffe8cc",
         borderRadius: 12,
@@ -67,7 +84,7 @@ export default function AdminDashboard() {
       }}>
         <div>
           <h3 style={{ margin: 0 }}>🛠 Admin Control Center</h3>
-          <small>Full system authority — manage users, tickets and technicians.</small>
+          <small>Manage technicians, approvals & system flow.</small>
         </div>
 
         <button className="dash-btn" onClick={() => navigate("/admin")}>
@@ -75,35 +92,49 @@ export default function AdminDashboard() {
         </button>
       </div>
 
+      {/* ACTION BUTTONS */}
       <div className="dash-grid">
-        <button className="dash-action-btn orange" onClick={() => navigate("/workorders")}>
-          Manage All Orders
+        <button className="dash-action-btn orange" onClick={() => navigate("/adminworkorders")}>
+          Manage Orders
         </button>
-        <button className="dash-action-btn blue" onClick={() => navigate("/report")}>
-          View All Issues
+
+        <button className="dash-action-btn blue" onClick={() => navigate("/admin-issues")}>
+          View Issues
         </button>
+
         <button className="dash-action-btn blue">
           Assign Technician
         </button>
+
         <button className="dash-action-btn orange">
           Manage Users
         </button>
       </div>
 
+      {/* STATS */}
       <div className="dash-grid">
-        <StatCard title="Total System Orders" value={stats.total} sub="All users" />
-        <StatCard title="Open Issues" value={stats.open} sub="Needs assignment" />
-        <StatCard title="In Progress" value={stats.inProgress} sub="Technicians working" />
-        <StatCard title="Completed" value={stats.completed} sub="Resolved tickets" />
+        <StatCard title="Total Orders" value={stats.total} />
+        <StatCard title="Pending" value={stats.pending} />
+        <StatCard title="In Progress" value={stats.inProgress} />
+        <StatCard title="Completed" value={stats.completed} />
       </div>
 
+      {/* ✅ NEW QUOTATION STATS */}
+      <div className="dash-grid">
+        <StatCard title="Quotation Pending" value={stats.quotationsPending} />
+        <StatCard title="Approved Quotations" value={stats.quotationsApproved} />
+      </div>
+
+      {/* HEALTH */}
       <div className="dash-row">
         <div className="dash-panel">
-          <h3>System Maintenance Health</h3>
-          <p className="muted">Overall system load indicator.</p>
+          <h3>System Health</h3>
 
           <div className="health-bar">
-            <div className="health-fill" style={{ width: `${stats.healthScore}%` }} />
+            <div
+              className="health-fill"
+              style={{ width: `${stats.healthScore}%` }}
+            />
           </div>
 
           <div className="health-meta">
@@ -113,41 +144,62 @@ export default function AdminDashboard() {
         </div>
 
         <div className="dash-panel">
-          <h3>⚠ System Alerts</h3>
-          {stats.priorityHigh > 0 ? (
-            <p className="pill high">High priority tickets require attention</p>
+          <h3>⚠ Alerts</h3>
+
+          {stats.quotationsPending > 0 ? (
+            <p className="pill high">
+              {stats.quotationsPending} quotation(s) waiting approval
+            </p>
+          ) : stats.priorityHigh > 0 ? (
+            <p className="pill high">
+              High priority issues exist
+            </p>
           ) : (
-            <p className="muted">No critical alerts in system</p>
+            <p className="muted">All systems normal</p>
           )}
         </div>
       </div>
 
+      {/* RECENT TABLE */}
       <div className="dash-panel">
-        <h3>Recent System Work Orders</h3>
+        <h3>Recent Work Orders</h3>
 
         {stats.recent.length === 0 ? (
-          <div className="empty">No work orders in system yet.</div>
+          <div className="empty">No work orders</div>
         ) : (
           <div className="table">
             <div className="trow thead">
               <div>ID</div>
-              <div>Title</div>
+              <div>Issue</div>
               <div>Status</div>
               <div>Priority</div>
-              <div>Date</div>
+              <div>Approval</div>
             </div>
 
             {stats.recent.map((o) => (
               <div className="trow" key={o._id}>
-                <div>{o._id}</div>
-                <div className="t-title">{o.issueType || "Untitled"}</div>
+                <div>{o._id.slice(-5)}</div>
+                <div>{o.issueType}</div>
+
                 <div>
-                  <span className={`pill ${String(o.status || "open").toLowerCase().replace(" ", "-")}`}>
-                    {o.status || "Open"}
+                  <span className={`pill ${String(o.status || "").toLowerCase().replace(" ", "-")}`}>
+                    {o.status}
                   </span>
                 </div>
-                <div>{o.priority || "-"}</div>
-                <div>{o.createdAt || "-"}</div>
+
+                <div>{o.priority}</div>
+
+                {/* ✅ SHOW ADMIN NAME */}
+                <div>
+                  {o.approved ? (
+                    <span>Approved by {o.approvedBy || "Admin"} ✅</span>
+                  ) : o.quotationSent ? (
+                    <span>Waiting ⏳</span>
+                  ) : (
+                    "-"
+                  )}
+                </div>
+
               </div>
             ))}
           </div>

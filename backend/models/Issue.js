@@ -21,11 +21,10 @@ const issueSchema = new mongoose.Schema({
     required: true,
   },
 
-  // who reported the issue
   reportedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true, // 👈 important
+    required: true,
   },
 
   status: {
@@ -40,6 +39,33 @@ const issueSchema = new mongoose.Schema({
 
   assignedTo: {
     type: String,
+    default: "Unassigned", // ✅ FIXED (important for dropdown)
+  },
+
+  // 🔥 QUOTATION SYSTEM
+  estimation: {
+    type: Number,
+    default: 0,
+  },
+
+  quotationSent: {
+    type: Boolean,
+    default: false,
+  },
+
+  approved: {
+    type: Boolean,
+    default: false,
+  },
+
+  approvedBy: {
+    type: String,
+    default: null,
+  },
+
+  // ✅ OPTIONAL BUT VERY IMPORTANT (for future)
+  completedAt: {
+    type: Date,
     default: null,
   },
 

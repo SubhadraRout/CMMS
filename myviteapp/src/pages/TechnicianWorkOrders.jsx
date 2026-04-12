@@ -2,34 +2,73 @@ import React, { useEffect, useState } from "react";
 
 export default function TechnicianWorkOrders() {
   const [orders, setOrders] = useState([]);
-
   const user = JSON.parse(localStorage.getItem("cmms_user"));
 
   useEffect(() => {
     fetch("http://localhost:5000/api/issues")
       .then((res) => res.json())
       .then((data) => {
-        // ✅ FILTER ONLY ASSIGNED WORK
         const filtered = data.filter(
-          (o) => o.assignedTo === user.username
+          (o) =>
+            o.assignedTo === user.username ||
+            o.assignedTo === "all"
         );
         setOrders(filtered);
       });
   }, []);
 
-  // ✅ Update status
   const updateStatus = async (id, newStatus) => {
-    await fetch(`http://localhost:5000/api/issues/${id}`, {
+    const res = await fetch(`http://localhost:5000/api/issues/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
+      body: JSON.stringify({
+        status: newStatus,
+        completedAt: new Date(),
+      }),
     });
 
+    if (res.ok) {
+      const updated = await res.json();
+
+      setOrders((prev) =>
+        prev.map((o) => (o._id === id ? updated : o))
+      );
+    }
+  };
+
+  const updateEstimation = (id, value) => {
     setOrders((prev) =>
       prev.map((o) =>
-        o._id === id ? { ...o, status: newStatus } : o
+        o._id === id ? { ...o, estimation: value } : o
       )
     );
+  };
+
+  const sendQuotation = async (order) => {
+    if (!order.estimation) {
+      alert("Enter estimation ❌");
+      return;
+    }
+
+    const res = await fetch(`http://localhost:5000/api/issues/${order._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        estimation: order.estimation,
+        quotationSent: true,
+        status: "Pending Approval",
+      }),
+    });
+
+    if (res.ok) {
+      const updated = await res.json();
+
+      setOrders((prev) =>
+        prev.map((o) => (o._id === order._id ? updated : o))
+      );
+
+      alert("✅ Sent");
+    }
   };
 
   return (
@@ -43,15 +82,17 @@ export default function TechnicianWorkOrders() {
               <th>ID</th>
               <th>Computer</th>
               <th>Issue</th>
+              <th>Description</th>
               <th>Status</th>
-              <th>Update</th>
+              <th>Estimation ₹</th>
+              <th>Action</th>
             </tr>
           </thead>
 
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan="5">No assigned work</td>
+                <td colSpan="7">No work</td>
               </tr>
             ) : (
               orders.map((o) => (
@@ -60,20 +101,39 @@ export default function TechnicianWorkOrders() {
                   <td>{o.computerId}</td>
                   <td>{o.issueType}</td>
 
+                  <td>{o.description}</td>
+
                   <td>{o.status}</td>
 
-                  {/* 🔥 Technician updates status */}
                   <td>
-                    <select
-                      value={o.status}
+                    <input
+                      type="number"
+                      value={o.estimation || ""}
                       onChange={(e) =>
-                        updateStatus(o._id, e.target.value)
+                        updateEstimation(o._id, e.target.value)
                       }
-                    >
-                      <option>Pending</option>
-                      <option>In Progress</option>
-                      <option>Completed</option>
-                    </select>
+                      disabled={o.quotationSent}
+                    />
+                  </td>
+
+                  <td>
+                    {!o.quotationSent ? (
+                      <button onClick={() => sendQuotation(o)}>
+                        Send
+                      </button>
+                    ) : !o.approved ? (
+                      <span>Waiting ⏳</span>
+                    ) : o.status !== "Completed" ? (
+                      <button
+                        onClick={() =>
+                          updateStatus(o._id, "Completed")
+                        }
+                      >
+                        Complete
+                      </button>
+                    ) : (
+                      <span>✅ Done</span>
+                    )}
                   </td>
                 </tr>
               ))

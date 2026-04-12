@@ -1,76 +1,81 @@
+/* FULL PAGE CENTERING */
 .login-page {
-  min-height: 100vh;
-  background: #f0f4ff;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  font-family: Arial, sans-serif;
 }
 
+/* LOGIN BOX */
 .login-box {
   background: white;
-  padding: 40px;
-  width: 350px;
+  padding: 40px 30px;
   border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  width: 350px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   text-align: center;
+  position: relative;
 }
 
+/* BACK ARROW */
+.back-arrow {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #333;
+}
+
+/* TITLE */
 .login-box h2 {
-  margin-bottom: 25px;
-  color: #2c3e50;
+  margin-bottom: 20px;
+  color: #1e3a8a;
 }
 
+/* INPUT FIELDS */
 .login-box input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  outline: none;
   font-size: 14px;
 }
 
-.login-box button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  background: #091c69;
-  color: white;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
+.login-box input:focus {
+  border-color: #1e3a8a;
 }
 
+/* BUTTON */
+.login-box button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 6px;
+  background: #1e3a8a;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  background: #2563eb;
+}
+
+/* FOOTER TEXT */
 .login-note {
   margin-top: 15px;
-  font-size: 13px;
-  color: gray;
+  font-size: 14px;
 }
 
 .login-note a {
-  color: #091c69;
+  color: #1e3a8a;
   text-decoration: none;
   font-weight: bold;
-}
-
-.login-box select {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.back-arrow {
-  position: absolute;
-  top: 15px;
-  left: 18px;
-  text-decoration: none;
-  font-size: 22px;
-  color: #091c69;
-  font-weight: bold;
-}
-
-.login-box {
-  position: relative;
 }

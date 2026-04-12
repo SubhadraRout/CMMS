@@ -1,6 +1,7 @@
 import express from "express";
 import Issue from "../models/Issue.js";
 console.log("✅ Issue routes loaded");
+import Notification from "../models/Notification.js"; // ✅ already added
 
 const router = express.Router();
 
@@ -24,12 +25,28 @@ router.post("/", async (req, res) => {
       description,
       priority,
       assignedTo,
-      reportedBy, // 🔥 FORCE SAVE
+      reportedBy,
     });
 
     await issue.save();
 
-    res.json(issue);
+    // 🔔 ADD THIS (notifications)
+    await Notification.create({
+      message: `New issue reported: ${issue.issueType}`,
+      role: "admin",
+    });
+
+    await Notification.create({
+      message: `New task available`,
+      role: "technician",
+    });
+
+    // ✅ RETURN POPULATED DATA
+    const populated = await Issue.findById(issue._id)
+      .populate("reportedBy", "username");
+
+    res.json(populated);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create issue" });
@@ -39,7 +56,7 @@ router.post("/", async (req, res) => {
 // GET ALL ISSUES
 router.get("/", async (req, res) => {
   const issues = await Issue.find()
-    .populate("reportedBy", "username") // ✅ ONLY CHANGE
+    .populate("reportedBy", "username")
     .sort({ createdAt: -1 });
 
   res.json(issues);
@@ -47,13 +64,19 @@ router.get("/", async (req, res) => {
 
 // UPDATE ISSUE
 router.put("/:id", async (req, res) => {
-  const { status } = req.body;
 
   const updated = await Issue.findByIdAndUpdate(
     req.params.id,
     req.body,
     { new: true }
-  );
+  )
+  .populate("reportedBy", "username");
+
+  // 🔔 ADD THIS
+  await Notification.create({
+    message: `Issue updated`,
+    role: "admin",
+  });
 
   res.json(updated);
 });
@@ -79,6 +102,12 @@ router.delete("/:id", async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ message: "Issue not found" });
     }
+
+    // 🔔 ADD THIS
+    await Notification.create({
+      message: `Issue deleted`,
+      role: "admin",
+    });
 
     res.json({ message: "Issue deleted successfully" });
   } catch (err) {

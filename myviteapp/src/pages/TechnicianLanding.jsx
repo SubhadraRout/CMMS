@@ -30,13 +30,14 @@ export default function TechnicianLanding() {
                 <h1>Technician Panel</h1>
 
                 <p>
-                  View assigned tasks, update work status
+                  View assigned tasks,see works completed
                   <br />
                   and handle maintenance operations efficiently.
                 </p>
 
                 <div className="hero-buttons d-flex flex-column flex-md-row gap-3 justify-content-center justify-content-md-start">
 
+                  {/* ✅ EXISTING */}
                   <button
                     className="btn-blue"
                     onClick={() => navigate("/tech-work")}
@@ -44,12 +45,15 @@ export default function TechnicianLanding() {
                     View Assigned Work
                   </button>
 
+                  {/* 🔥 NEW BUTTON */}
                   <button
                     className="btn-blue"
-                    onClick={() => navigate("/notification")}
+                    onClick={() => navigate("/tech-completed")}
                   >
-                    Update Work Status
+                    My Works (Completed)
                   </button>
+
+                  
 
                 </div>
               </div>
