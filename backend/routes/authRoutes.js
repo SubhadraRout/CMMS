@@ -32,7 +32,10 @@ router.post("/signup", async (req, res) => {
 
     await newUser.save();
 
-    res.json({ message: "Signup successful", user: newUser });
+    const safe = newUser.toObject();
+    delete safe.password;
+
+    res.json({ message: "Signup successful", user: safe });
 
   } catch (err) {
     res.status(500).json({ message: "Error signing up" });
@@ -55,7 +58,10 @@ router.post("/login", async (req, res) => {
       await user.save();
     }
 
-    res.json({ message: "Login successful", user });
+    const safe = user.toObject();
+    delete safe.password;
+
+    res.json({ message: "Login successful", user: safe });
 
   } catch (err) {
     res.status(500).json({ message: "Error logging in" });

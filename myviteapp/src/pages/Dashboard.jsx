@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getOrders } from "../utils/storage";
 import { getProfile } from "../utils/profileStorage";
+import { apiUrl, resolveStoredUserId } from "../apiBase.js";
 import "./dashboard.css";
 
 function StatCard({ title, value, sub }) {
@@ -16,13 +16,22 @@ function StatCard({ title, value, sub }) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const user = JSON.parse(localStorage.getItem("cmms_user"));
+  const userId = resolveStoredUserId(user);
 
-useEffect(() => {
-  fetch("http://localhost:5000/api/issues")
-    .then((res) => res.json())
-    .then((data) => setOrders(data));
-}, []);  const profile = getProfile();
+  useEffect(() => {
+    if (!userId) {
+      setOrders([]);
+      return;
+    }
+    fetch(apiUrl(`/api/issues/user/${encodeURIComponent(userId)}`))
+      .then((res) => res.json())
+      .then((data) => {
+        setOrders(Array.isArray(data) ? data : []);
+      });
+  }, [userId]);
+  const profile = getProfile();
 
   const stats = useMemo(() => {
     const total = orders.length;
@@ -75,7 +84,7 @@ useEffect(() => {
 
       {/* STAT CARDS */}
       <div className="dash-grid">
-        <StatCard title="Total Work Orders" value={stats.total} sub="All requests in system" />
+        <StatCard title="Total Work Orders" value={stats.total} sub="Your reported requests" />
         <StatCard title="Open" value={stats.open} sub="Needs action" />
         <StatCard title="In Progress" value={stats.inProgress} sub="Currently being fixed" />
         <StatCard title="Completed" value={stats.completed} sub="Resolved/Closed" />

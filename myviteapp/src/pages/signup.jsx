@@ -24,11 +24,12 @@ export default function Signup() {
     }
 
     // ✅ EMAIL VALIDATION ADDED
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      alert("Enter valid email ❌");
-      return;
-    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com)$/;
+
+if (!emailRegex.test(form.email)) {
+  alert("Enter valid email (gmail/yahoo/outlook only) ❌");
+  return;
+}
 
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match");

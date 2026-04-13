@@ -2,7 +2,17 @@ const PROFILE_KEY = "cms_profile";
 
 export function getProfile() {
   try {
-    return JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+    const localProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+    if (localProfile && Object.keys(localProfile).length > 0) {
+      return localProfile;
+    }
+    const user = JSON.parse(localStorage.getItem("cmms_user") || "{}");
+    return {
+      name: user.username || "",
+      email: user.email || "",
+      department: user.department || "",
+      photo: user.photo || "",
+    };
   } catch {
     return {};
   }

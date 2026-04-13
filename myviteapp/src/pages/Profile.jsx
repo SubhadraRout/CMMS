@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl, resolveStoredUserId } from "../apiBase.js";
+import { saveProfile } from "../utils/profileStorage.js";
 import "./dashboard.css";
 
 export default function Profile() {
@@ -17,10 +19,12 @@ export default function Profile() {
   const [email, setEmail] = useState("");
   const [dept, setDept] = useState("");
   const [photo, setPhoto] = useState("");
+  const userId = resolveStoredUserId(user);
 
   // ✅ FETCH PROFILE (FIXED dependency)
   useEffect(() => {
-    fetch(`http://localhost:5000/api/auth/profile/${user._id}`)
+    if (!userId) return;
+    fetch(apiUrl(`/api/auth/profile/${encodeURIComponent(userId)}`))
       .then(res => res.json())
       .then(data => {
         setName(data.username || "");
@@ -28,7 +32,7 @@ export default function Profile() {
         setDept(data.department || "");
         setPhoto(data.photo || "");
       });
-  }, [user._id]); // ✅ IMPORTANT
+  }, [userId]); // ✅ IMPORTANT
 
   // ✅ PHOTO UPLOAD
   const onPhotoChange = (e) => {
@@ -44,30 +48,41 @@ export default function Profile() {
 
   // ✅ SAVE PROFILE (FIXED 🔥)
   const save = async () => {
-    const res = await fetch(`http://localhost:5000/api/auth/profile/${user._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: name,
-        email,
-        department: dept,
-        photo,
-      }),
-    });
+    try {
+      const res = await fetch(apiUrl(`/api/auth/profile/${encodeURIComponent(userId)}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: name,
+          email,
+          department: dept,
+          photo,
+        }),
+      });
 
-    const updatedUser = await res.json();
+      const payload = await res.json().catch(() => ({}));
 
-    if (res.ok) {
+      if (!res.ok) {
+        alert(payload?.message || "Save failed");
+        return;
+      }
+
       // ✅ update localStorage
-      localStorage.setItem("cmms_user", JSON.stringify(updatedUser));
+      localStorage.setItem("cmms_user", JSON.stringify(payload));
+      saveProfile({
+        name: payload.username || "",
+        email: payload.email || "",
+        department: payload.department || "",
+        photo: payload.photo || "",
+      });
 
       // ✅ update state (VERY IMPORTANT)
-      setUser(updatedUser);
-      setPhoto(updatedUser.photo);
+      setUser(payload);
+      setPhoto(payload.photo || "");
 
-      alert("✅ Profile saved successfully");
-    } else {
-      alert("❌ Save failed");
+      alert("Save changes applied");
+    } catch {
+      alert("Save failed. Please try again.");
     }
   };
 
@@ -75,7 +90,7 @@ export default function Profile() {
   const deleteAccount = async () => {
     const password = prompt("Enter password to delete account:");
 
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch(apiUrl("/api/auth/login"), {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ username: user.username, password })
@@ -86,7 +101,7 @@ export default function Profile() {
       return;
     }
 
-    const delRes = await fetch(`http://localhost:5000/api/auth/profile/${user._id}`, {
+    const delRes = await fetch(apiUrl(`/api/auth/profile/${encodeURIComponent(userId)}`), {
       method: "DELETE",
     });
 
@@ -103,7 +118,7 @@ export default function Profile() {
   const deactivate = async () => {
     const password = prompt("Enter password to deactivate:");
 
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch(apiUrl("/api/auth/login"), {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ username: user.username, password })
@@ -114,7 +129,7 @@ export default function Profile() {
       return;
     }
 
-    const deactRes = await fetch(`http://localhost:5000/api/auth/profile/${user._id}/deactivate`, {
+    const deactRes = await fetch(apiUrl(`/api/auth/profile/${encodeURIComponent(userId)}/deactivate`), {
       method: "PUT",
     });
 

@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from "react";
+import { apiUrl, resolveStoredUserId } from "../apiBase.js";
 
 export default function WorkOrders() {
   const [orders, setOrders] = useState([]);
+  const user = JSON.parse(localStorage.getItem("cmms_user"));
+  const userId = resolveStoredUserId(user);
 
   // ✅ Fetch from backend
   useEffect(() => {
   const fetchData = () => {
-    fetch("http://localhost:5000/api/issues")
+    if (!userId) {
+      setOrders([]);
+      return;
+    }
+    fetch(apiUrl(`/api/issues/user/${encodeURIComponent(userId)}`))
       .then(res => res.json())
-      .then(data => setOrders(data));
+      .then(data => {
+        const list = Array.isArray(data) ? data : [];
+        setOrders(list);
+      });
   };
 
   fetchData();
   const interval = setInterval(fetchData, 3000); // every 3 sec
 
   return () => clearInterval(interval);
-}, []);
+}, [userId]);
   // ✅ Delete from backend
   const remove = async (id) => {
-    await fetch(`http://localhost:5000/api/issues/${id}`, {
+    await fetch(apiUrl(`/api/issues/${id}`), {
       method: "DELETE",
     });
 

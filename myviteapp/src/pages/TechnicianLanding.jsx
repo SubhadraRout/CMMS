@@ -98,7 +98,6 @@ export default function TechnicianLanding() {
             <ul>
               <li onClick={() => navigate("/")}>Home</li>
               <li onClick={() => navigate("/workorders")}>My Work</li>
-              <li onClick={() => navigate("/notification")}>Notifications</li>
             </ul>
           </div>
 
