@@ -23,9 +23,16 @@ export default function Signup() {
       return;
     }
 
-    // ✅ EMAIL VALIDATION ADDED
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com)$/;
+    const email = form.email;
 
+// ❌ Check for uppercase letters
+if (/[A-Z]/.test(email)) {
+  alert("Email should not contain uppercase letters ❌");
+  return;
+}
+
+    // ✅ EMAIL VALIDATION ADDED
+    const emailRegex = /^[a-z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com)$/;
 if (!emailRegex.test(form.email)) {
   alert("Enter valid email (gmail/yahoo/outlook only) ❌");
   return;
