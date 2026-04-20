@@ -5,7 +5,7 @@ export default function AdminLanding() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("cmms_user");
+    const storedUser = sessionStorage.getItem("cmms_user");
 
     if (!storedUser) {
       navigate("/login");

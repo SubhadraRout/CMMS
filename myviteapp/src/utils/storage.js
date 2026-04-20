@@ -1,11 +1,11 @@
 const KEY = "cms_workorders";
 
 export function getOrders() {
-  return JSON.parse(localStorage.getItem(KEY) || "[]");
+  return JSON.parse(sessionStorage.getItem(KEY) || "[]");
 }
 
 export function saveOrders(orders) {
-  localStorage.setItem(KEY, JSON.stringify(orders));
+  sessionStorage.setItem(KEY, JSON.stringify(orders));
 }
 
 export function addOrder(order) {

@@ -29,10 +29,10 @@ function Login() {
       if (res.ok) {
         const user = data.user;
 
-        localStorage.setItem("cmms_user", JSON.stringify(user));
+        sessionStorage.setItem("cmms_user", JSON.stringify(user));
 
         // 👇 NEW LINE ADDED
-        localStorage.setItem("userId", user._id);
+        sessionStorage.setItem("userId", user._id);
 
         // ✅ use navigate (NOT window.location)
         if (user.role === "admin") {

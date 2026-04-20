@@ -1,0 +1,149 @@
+/* PAGE */
+.admin-container {
+  padding: 24px 40px;
+}
+
+/* TITLE */
+.admin-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+/* CARD */
+.admin-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* TABLE */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* HEADER */
+.admin-table thead {
+  background: #f5f7fa;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 600;
+}
+
+/* ROWS */
+.admin-table td {
+  padding: 14px;
+  font-size: 14px;
+  color: #333;
+  border-top: 1px solid #eee;
+}
+
+/* HOVER */
+.admin-table tbody tr:hover {
+  background: #f9fbff;
+  transition: 0.2s ease;
+}
+
+/* ISSUE */
+.issue-text {
+  text-transform: capitalize;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* STATUS BADGE */
+.status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* STATUS COLORS */
+.status.completed {
+  background: #e6f9f0;
+  color: #27ae60;
+}
+
+.status.pending {
+  background: #fff4e6;
+  color: #e67e22;
+}
+
+.status.assigned {
+  background: #e8f0ff;
+  color: #3b82f6;
+}
+
+.status.in-progress {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+/* PRIORITY DROPDOWN */
+.priority-select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 13px;
+}
+
+/* TECHNICIAN DROPDOWN */
+.tech-select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 13px;
+}
+
+/* APPROVAL */
+.approved {
+  color: #27ae60;
+  font-weight: 500;
+}
+
+.not-approved {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+/* SEND BUTTON */
+.send-btn {
+  background: #22c55e;
+  border: none;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.send-btn:hover {
+  background: #16a34a;
+}
+
+/* CURRENCY */
+.amount {
+  font-weight: 500;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 12px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+}

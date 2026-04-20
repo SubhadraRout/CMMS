@@ -25,7 +25,7 @@ export default function TechnicianDashboard() {
 
   // ✅ Protect route
   useEffect(() => {
-    const storedUser = localStorage.getItem("cmms_user");
+    const storedUser = sessionStorage.getItem("cmms_user");
     if (!storedUser) return navigate("/login");
 
     const user = JSON.parse(storedUser);

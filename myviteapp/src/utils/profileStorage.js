@@ -2,11 +2,11 @@ const PROFILE_KEY = "cms_profile";
 
 export function getProfile() {
   try {
-    const localProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+    const localProfile = JSON.parse(sessionStorage.getItem(PROFILE_KEY) || "{}");
     if (localProfile && Object.keys(localProfile).length > 0) {
       return localProfile;
     }
-    const user = JSON.parse(localStorage.getItem("cmms_user") || "{}");
+    const user = JSON.parse(sessionStorage.getItem("cmms_user") || "{}");
     return {
       name: user.username || "",
       email: user.email || "",
@@ -19,7 +19,7 @@ export function getProfile() {
 }
 
 export function saveProfile(profile) {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  sessionStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }
 
 export function updateProfile(patch) {

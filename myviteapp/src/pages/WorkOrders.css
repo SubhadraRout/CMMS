@@ -1,0 +1,137 @@
+/* PAGE */
+body {
+  background: #f4f6f9;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* CONTAINER */
+.workorders-container {
+  padding: 20px 40px;
+}
+
+/* TITLE */
+.workorders-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* TABLE */
+.workorders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* HEADER */
+.workorders-table thead {
+  background: #f1f3f6;
+}
+
+.workorders-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 600;
+}
+
+/* ROWS */
+.workorders-table td {
+  padding: 14px;
+  font-size: 14px;
+  color: #333;
+  border-top: 1px solid #eee;
+}
+
+/* HOVER EFFECT */
+.workorders-table tbody tr:hover {
+  background: #f9fbff;
+  transition: 0.2s ease;
+}
+
+/* ISSUE TYPE STYLE */
+.issue-text {
+  font-weight: 500;
+  color: #2c3e50;
+  text-transform: capitalize;
+}
+
+/* STATUS BADGES */
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* STATUS COLORS */
+.status.completed {
+  background: #e6f9f0;
+  color: #27ae60;
+}
+
+.status.pending {
+  background: #fff4e6;
+  color: #e67e22;
+}
+
+.status.assigned {
+  background: #e8f0ff;
+  color: #3b82f6;
+}
+
+.status.in-progress {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+/* PRIORITY */
+.priority {
+  font-weight: 500;
+}
+
+.priority.high {
+  color: #e74c3c;
+}
+
+.priority.medium {
+  color: #f39c12;
+}
+
+.priority.low {
+  color: #27ae60;
+}
+
+/* DELETE BUTTON */
+.delete-btn {
+  background: #ff4d4f;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: #d9363e;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .workorders-container {
+    padding: 10px;
+  }
+
+  .workorders-table th,
+  .workorders-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+}

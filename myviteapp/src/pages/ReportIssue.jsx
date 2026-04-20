@@ -61,8 +61,8 @@ export default function ReportIssue() {
     if (Object.keys(errs).length > 0) return;
 
     try {
-      // ✅ FIX: get full user from localStorage
-      const user = JSON.parse(localStorage.getItem("cmms_user"));
+      // ✅ FIX: get full user from sessionStorage
+      const user = JSON.parse(sessionStorage.getItem("cmms_user"));
 
       if (!user?._id) {
         alert("Login required ❌");

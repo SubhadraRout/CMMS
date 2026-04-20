@@ -243,7 +243,7 @@ router.delete("/:id", async (req, res) => {
 
     if (deleted.reportedBy) {
       await createNotificationOnce({
-        message: `Your issue (${deleted.issueType}) was closed/deleted by admin.`,
+        message: `Your issue (${deleted.issueType}) was deleted by you.`,
         role: "user",
         userId: deleted.reportedBy,
         issueId: deleted._id,

@@ -1,0 +1,78 @@
+/* CONTAINER */
+.tech-container {
+  padding: 24px 40px;
+}
+
+/* TITLE */
+.tech-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+/* CARD */
+.tech-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* TABLE */
+.tech-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* HEADER */
+.tech-table thead {
+  background: #f5f7fa;
+}
+
+.tech-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 600;
+}
+
+/* ROWS */
+.tech-table td {
+  padding: 14px;
+  font-size: 14px;
+  color: #333;
+  border-top: 1px solid #eee;
+}
+
+/* HOVER */
+.tech-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+/* ISSUE */
+.issue-text {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+/* EMPTY STATE */
+.empty {
+  color: #777;
+  text-align: center;
+  padding: 20px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .tech-container {
+    padding: 12px;
+  }
+
+  .tech-table th,
+  .tech-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+}

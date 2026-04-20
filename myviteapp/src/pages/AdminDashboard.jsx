@@ -24,7 +24,7 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("cmms_user");
+    const storedUser = sessionStorage.getItem("cmms_user");
     if (!storedUser) return navigate("/login");
 
     const user = JSON.parse(storedUser);
@@ -102,11 +102,11 @@ export default function AdminDashboard() {
           View Issues
         </button>
 
-        <button className="dash-action-btn blue">
+        <button className="dash-action-btn blue"  onClick={() => navigate("/adminworkorders")}>
           Assign Technician
         </button>
 
-        <button className="dash-action-btn orange">
+        <button className="dash-action-btn orange" onClick={() => navigate("/manage-users")}>
           Manage Users
         </button>
       </div>

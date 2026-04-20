@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 export default function TechnicianCompleted() {
   const [orders, setOrders] = useState([]);
-  const user = JSON.parse(localStorage.getItem("cmms_user"));
+  const user = JSON.parse(sessionStorage.getItem("cmms_user"));
 
   useEffect(() => {
     fetch("http://localhost:5000/api/issues")

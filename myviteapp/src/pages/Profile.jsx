@@ -8,7 +8,7 @@ export default function Profile() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("cmms_user"))
+    JSON.parse(sessionStorage.getItem("cmms_user"))
   );
 
   if (!user) {
@@ -67,8 +67,8 @@ export default function Profile() {
         return;
       }
 
-      // ✅ update localStorage
-      localStorage.setItem("cmms_user", JSON.stringify(payload));
+      // ✅ update sessionStorage
+      sessionStorage.setItem("cmms_user", JSON.stringify(payload));
       saveProfile({
         name: payload.username || "",
         email: payload.email || "",
@@ -107,7 +107,7 @@ export default function Profile() {
 
     if (delRes.ok) {
       alert("✅ Account deleted successfully");
-      localStorage.clear();
+      sessionStorage.clear();
       navigate("/signup");
     } else {
       alert("❌ Delete failed");
@@ -135,7 +135,7 @@ export default function Profile() {
 
     if (deactRes.ok) {
       alert("Account deactivated");
-      localStorage.clear();
+      sessionStorage.clear();
       navigate("/login");
     } else {
       alert("Deactivate failed");

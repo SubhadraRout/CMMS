@@ -17,7 +17,7 @@ function StatCard({ title, value, sub }) {
 export default function Dashboard() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
-  const user = JSON.parse(localStorage.getItem("cmms_user"));
+  const user = JSON.parse(sessionStorage.getItem("cmms_user"));
   const userId = resolveStoredUserId(user);
 
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function Dashboard() {
 
         <div className="dash-panel">
           <h3>Work Orders by Status</h3>
-          <p className="muted">Counts from your localStorage data.</p>
+          <p className="muted">Counts from your sessionStorage data.</p>
 
           <div className="mini-bars">
             <div className="bar-row">
@@ -172,7 +172,7 @@ export default function Dashboard() {
           <div className="table">
             <div className="trow thead">
               <div>ID</div>
-              <div>Title</div>
+              <div>Issue</div>
               <div>Status</div>
               <div>Priority</div>
               <div>Date</div>
@@ -181,7 +181,7 @@ export default function Dashboard() {
             {stats.recent.map((o) => (
               <div className="trow" key={o.id}>
                 <div>{o._id?.slice(-5)}</div>
-                <div className="t-title">{o.title || o.issue || "Untitled"}</div>
+                <div className="t-title">{o.issueType || o.title || o.issue || "Untitled"}</div>
                 <div>
                   <span className={`pill ${String(o.status || "open").toLowerCase().replace(" ", "-")}`}>
                     {o.status || "Open"}

@@ -48,7 +48,7 @@ if (!emailRegex.test(form.email)) {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("cmms_user", JSON.stringify(data.user));
+        sessionStorage.setItem("cmms_user", JSON.stringify(data.user));
         alert("Signup successful ✅");
         window.location.href = "/";
       } else {

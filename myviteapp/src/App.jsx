@@ -27,6 +27,7 @@ import AdminLanding from "./pages/AdminLanding.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import AdminWorkOrders from "./pages/AdminWorkOrders.jsx";
 import AdminIssues from "./pages/AdminIssues.jsx";
+import TechCompleted from "./pages/TechCompleted";
 
 import TechnicianLanding from "./pages/TechnicianLanding.jsx";
 import TechnicianDashboard from "./pages/TechnicianDashboard.jsx";
@@ -36,19 +37,19 @@ import TechnicianWorkOrders from "./pages/TechnicianWorkOrders.jsx";
 function Layout() {
   const navigate = useNavigate();
 
-  const storedUser = localStorage.getItem("cmms_user");
+  const storedUser = sessionStorage.getItem("cmms_user");
   const user = storedUser ? JSON.parse(storedUser) : null;
 
   const isLoggedIn = user !== null;
   const role = user?.role;
 
   const logout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = "/";
   };
 
   const goProtected = (path) => {
-    if (!localStorage.getItem("cmms_user")) {
+    if (!sessionStorage.getItem("cmms_user")) {
       navigate("/login");
     } else {
       navigate(path);
@@ -87,7 +88,7 @@ function Layout() {
                 </button>
 
                 <button onClick={() => goProtected("/adminworkorders")} className="nav-link-btn">
-                  Manage Orders
+                  Assign Technician
                 </button>
               </>
             )}
@@ -218,10 +219,10 @@ function Testimonials() {
 function Home() {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("cmms_user")); // ✅ ADDED
+  const user = JSON.parse(sessionStorage.getItem("cmms_user")); // ✅ ADDED
 
   const goProtected = (path) => {
-    if (!localStorage.getItem("cmms_user")) {
+    if (!sessionStorage.getItem("cmms_user")) {
       navigate("/login");
     } else {
       navigate(path);
@@ -414,7 +415,6 @@ export default function App() {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/report" element={<ProtectedRoute><ReportIssue /></ProtectedRoute>} />
         <Route path="/workorders" element={<ProtectedRoute><WorkOrders /></ProtectedRoute>} />
-
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/help" element={<Help />} />
@@ -442,6 +442,15 @@ export default function App() {
   element={
     <ProtectedRoute>
       <TechnicianWorkOrders />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/tech-completed"
+  element={
+    <ProtectedRoute>
+      <TechCompleted />
     </ProtectedRoute>
   }
 />

@@ -1,14 +1,14 @@
 const KEY = "notifications";
 
 export const getNotifications = () => {
-  return JSON.parse(localStorage.getItem(KEY)) || [];
+  return JSON.parse(sessionStorage.getItem(KEY)) || [];
 };
 
 export const addNotification = (notification) => {
   const old = getNotifications();
-  localStorage.setItem(KEY, JSON.stringify([notification, ...old]));
+  sessionStorage.setItem(KEY, JSON.stringify([notification, ...old]));
 };
 
 export const clearNotifications = () => {
-  localStorage.removeItem(KEY);
+  sessionStorage.removeItem(KEY);
 };

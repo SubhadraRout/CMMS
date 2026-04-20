@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import "./AdminWorkOrders.css";
 
 export default function AdminWorkOrders() {
   const [orders, setOrders] = useState([]);
   const [editedOrders, setEditedOrders] = useState({});
   const [technicians, setTechnicians] = useState([]);
 
-  const user = JSON.parse(localStorage.getItem("cmms_user"));
+  const user = JSON.parse(sessionStorage.getItem("cmms_user"));
 
   // ✅ FETCH ORDERS
   useEffect(() => {
